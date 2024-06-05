@@ -52,7 +52,7 @@ NNN = 8000
 image_path = './data/102flowers/' # your image path
 image_test = './data/102flowers/' # your image path for calculating FID
 
-main_path = './code_GAN_Memory/'
+main_path = './'
 load_dir = './pretrained_model/'
 out_path = main_path+'/results/'
 
