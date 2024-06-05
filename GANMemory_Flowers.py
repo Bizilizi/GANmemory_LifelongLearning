@@ -49,8 +49,8 @@ Num_epoch = 500 *10000
 
 DATA = 'Flowers'
 NNN = 8000
-image_path = '/datasets/flowers102' # your image path
-image_test = '/datasets/flowers102' # your image path for calculating FID
+image_path = './data/102flowers/' # your image path
+image_test = './data/102flowers/' # your image path for calculating FID
 
 main_path = './'
 load_dir = './pretrained_model/'
