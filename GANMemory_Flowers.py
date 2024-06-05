@@ -128,11 +128,11 @@ if 1:
     ''' --------- Choose the fixed layer ---------------'''
     generator, discriminator = build_models(config)
 
-    dict_G = torch.load(load_dir + DATA_FIX + 'Pre_generator')
-    generator = model_equal_all(generator, dict_G)
-    generator = load_model_norm(generator)
-    dict_D = torch.load(load_dir + DATA_FIX + 'Pre_discriminator')
-    discriminator = model_equal_all(discriminator, dict_D)
+    # dict_G = torch.load(load_dir + DATA_FIX + 'Pre_generator')
+    # generator = model_equal_all(generator, dict_G)
+    # generator = load_model_norm(generator)
+    # dict_D = torch.load(load_dir + DATA_FIX + 'Pre_discriminator')
+    # discriminator = model_equal_all(discriminator, dict_D)
     # discriminator = load_model_norm(discriminator, is_G=False)
 
     for name, param in generator.named_parameters():
