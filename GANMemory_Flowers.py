@@ -91,7 +91,7 @@ if 1:
         checkpoint_dir=checkpoint_dir
     )
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:3" if torch.cuda.is_available() else "cpu")
 
     # Dataset
     train_dataset, nlabels = get_dataset(
