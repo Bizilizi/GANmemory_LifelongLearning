@@ -225,7 +225,6 @@ if 1:
         gan_type=config['training']['gan_type'],
         reg_type=config['training']['reg_type'],
         reg_param=config['training']['reg_param'],
-        D_fix_layer=config['discriminator']['layers']
     )
 
 # Training loop

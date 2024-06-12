@@ -42,7 +42,7 @@ from EWC_ import Net
 import scipy.io as sio
 
 ce_loss = nn.CrossEntropyLoss()
-main_path = './code_GAN_Memory/'
+main_path = '.'
 
 data_transforms = {
     'train1': transforms.Compose([
