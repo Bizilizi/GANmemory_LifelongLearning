@@ -10,7 +10,6 @@ import random
 
 
 def seed_torch(seed=1029):
-
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
     np.random.seed(seed)
@@ -45,18 +44,18 @@ DATA_FIX: used as a fixed pre-trained model
 # DATA = 'CELEBA'
 seed_torch(999)
 DATA_FIX = 'CELEBA'
-Num_epoch = 500 *10000
+Num_epoch = 500 * 10000
 
 DATA = 'Flowers'
 NNN = 8000
-image_path = './data/102flowers/' # your image path
-image_test = './data/102flowers/' # your image path for calculating FID
+image_path = './data/102flowers/'  # your image path
+image_test = './data/102flowers/'  # your image path for calculating FID
 
-main_path = './'
+main_path = './code_GAN_Memory/'
 load_dir = './pretrained_model/'
-out_path = '/scratch/shared/beegfs/dzverev/GANmemory_LifelongLearning/results/'
+out_path = main_path + '/results/'
 
-config_path = main_path+'/configs/' +'Flowers_celeba.yaml'
+config_path = main_path + '/configs/' + 'Flowers_celeba.yaml'
 config = load_config(config_path, 'configs/default.yaml')
 config['data']['train_dir'] = image_path
 config['data']['test_dir'] = image_test
@@ -101,10 +100,10 @@ if 1:
         lsun_categories=config['data']['lsun_categories_train']
     )
     train_loader = torch.utils.data.DataLoader(
-            train_dataset,
-            batch_size=batch_size,
-            num_workers=config['training']['nworkers'],
-            shuffle=True, pin_memory=True, sampler=None, drop_last=True
+        train_dataset,
+        batch_size=batch_size,
+        num_workers=config['training']['nworkers'],
+        shuffle=True, pin_memory=True, sampler=None, drop_last=True
     )
     print('train_dataset=', train_dataset)
     test_dataset, _ = get_dataset(
@@ -128,11 +127,11 @@ if 1:
     ''' --------- Choose the fixed layer ---------------'''
     generator, discriminator = build_models(config)
 
-    # dict_G = torch.load(load_dir + DATA_FIX + 'Pre_generator')
-    # generator = model_equal_all(generator, dict_G)
-    # generator = load_model_norm(generator)
-    # dict_D = torch.load(load_dir + DATA_FIX + 'Pre_discriminator')
-    # discriminator = model_equal_all(discriminator, dict_D)
+    dict_G = torch.load(load_dir + DATA_FIX + 'Pre_generator')
+    generator = model_equal_all(generator, dict_G)
+    generator = load_model_norm(generator)
+    dict_D = torch.load(load_dir + DATA_FIX + 'Pre_discriminator')
+    discriminator = model_equal_all(discriminator, dict_D)
     # discriminator = load_model_norm(discriminator, is_G=False)
 
     for name, param in generator.named_parameters():
@@ -177,7 +176,7 @@ if 1:
     # Save for tests
     ntest = 20
     x_real, ytest = utils.get_nsamples(train_loader, ntest)
-    ytest.clamp_(None, nlabels-1)
+    ytest.clamp_(None, nlabels - 1)
     ytest = ytest.to(device)
     ztest = zdist.sample((ntest,)).to(device)
     utils.save_images(x_real, path.join(out_dir, 'real.png'))
@@ -228,7 +227,6 @@ inception_mean_all = []
 inception_std_all = []
 fid_all = []
 
-
 tstart = time.time()
 
 for epoch_idx in range(Num_epoch):
@@ -244,7 +242,7 @@ for epoch_idx in range(Num_epoch):
         g_lr = g_optimizer.param_groups[0]['lr']
 
         x_real, y = x_real.to(device), y.to(device)
-        y.clamp_(None, nlabels-1)
+        y.clamp_(None, nlabels - 1)
 
         # Generators updates
         z = zdist.sample((batch_size,))
@@ -262,7 +260,7 @@ for epoch_idx in range(Num_epoch):
             # (i) Sample if necessary
             if (it % config['training']['sample_every']) == 0:
                 print('[epoch %0d, it %4d] g_loss = %.4f, d_loss = %.4f, reg=%.4f, time=%.2f'
-                      % (epoch_idx, it, gloss, dloss, reg, time.time()-tstart))
+                      % (epoch_idx, it, gloss, dloss, reg, time.time() - tstart))
                 tstart = time.time()
                 # print('Creating samples...')
                 x = evaluator.create_samples(ztest, ytest)
@@ -281,8 +279,8 @@ for epoch_idx in range(Num_epoch):
                 Inception_mean = np.stack(inception_mean_all)
                 Inception_std = np.stack(inception_std_all)
                 sio.savemat(out_path + DATA + 'base_FID_IS.mat', {'FID': FID,
-                                                       'Inception_mean': Inception_mean,
-                                                       'Inception_std': Inception_std})
+                                                                  'Inception_mean': Inception_mean,
+                                                                  'Inception_std': Inception_std})
 
             # (iii) Backup if necessary
             if ((it + 1) % backup_every) == 0:
@@ -290,8 +288,7 @@ for epoch_idx in range(Num_epoch):
                 TrainModeSave = DATA + '_%08d_' % it
                 generator_test_part = save_adafm_only(generator_test)
                 torch.save(generator_test_part, save_dir + TrainModeSave + 'Pre_generator')
-            if it+1 == 60000:
+            if it + 1 == 60000:
                 TrainModeSave = DATA + '_%08d_' % it
                 discriminator_part = save_adafm_only(discriminator, is_G=False)
                 torch.save(discriminator_part, save_dir + TrainModeSave + 'Pre_discriminator')
-

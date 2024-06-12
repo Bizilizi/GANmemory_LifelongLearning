@@ -12,8 +12,8 @@ import torchvision.models as models
 from gan_training.distributions import get_ydist
 import torch.nn.functional as F
 
-def seed_torch(seed=1029):
 
+def seed_torch(seed=1029):
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
     np.random.seed(seed)
@@ -40,9 +40,9 @@ from gan_training.config import (
 )
 from EWC_ import Net
 import scipy.io as sio
+
 ce_loss = nn.CrossEntropyLoss()
 main_path = './code_GAN_Memory/'
-
 
 data_transforms = {
     'train1': transforms.Compose([
@@ -52,16 +52,16 @@ data_transforms = {
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ]),
     'train':
-    transforms.Compose([
-        transforms.RandomResizedCrop(size=256, scale=(0.8, 1.0)),
-        transforms.RandomRotation(degrees=15),
-        transforms.ColorJitter(),
-        transforms.RandomHorizontalFlip(),
-        transforms.CenterCrop(size=224),  # Image net standards
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406],
-                             [0.229, 0.224, 0.225])  # Imagenet standards
-    ]),
+        transforms.Compose([
+            transforms.RandomResizedCrop(size=256, scale=(0.8, 1.0)),
+            transforms.RandomRotation(degrees=15),
+            transforms.ColorJitter(),
+            transforms.RandomHorizontalFlip(),
+            transforms.CenterCrop(size=224),  # Image net standards
+            transforms.ToTensor(),
+            transforms.Normalize([0.485, 0.456, 0.406],
+                                 [0.229, 0.224, 0.225])  # Imagenet standards
+        ]),
     'test': transforms.Compose([
         transforms.Resize(256),
         transforms.CenterCrop(224),
@@ -121,19 +121,19 @@ def select_task_path_joint(task_id, is_test=False):
 def select_model(do_method, task_id, generator, model_path_all):
     if do_method == 'GAN_Memory':
         if task_id == 0:
-            model_path = main_path+'/results/ImageNet_fish/models/'
+            model_path = main_path + '/results/ImageNet_fish/models/'
             dict_G = torch.load(model_path + 'fish_00059999_Pre_generator')
         elif task_id == 1:
-            model_path = main_path+'/results/ImageNet_bird/models/'
+            model_path = main_path + '/results/ImageNet_bird/models/'
             dict_G = torch.load(model_path + 'bird_00059999_Pre_generator')
         elif task_id == 2:
-            model_path = main_path+'/results/ImageNet_snake/models/'
+            model_path = main_path + '/results/ImageNet_snake/models/'
             dict_G = torch.load(model_path + 'snake_00059999_Pre_generator')
         elif task_id == 3:
-            model_path = main_path+'/results/ImageNet_dog/models/'
+            model_path = main_path + '/results/ImageNet_dog/models/'
             dict_G = torch.load(model_path + 'dog_00059999_Pre_generator')
         elif task_id == 4:
-            model_path = main_path+'/results/ImageNet_butterfly/models/'
+            model_path = main_path + '/results/ImageNet_butterfly/models/'
             dict_G = torch.load(model_path + 'butterfly_00059999_Pre_generator')
     elif do_method == 'MeRGAN':
         if task_id == 0:
@@ -155,18 +155,20 @@ def select_model(do_method, task_id, generator, model_path_all):
     generator = model_equal_all(generator, dict_G)
     return generator
 
+
 # -------------------------------------------------------------
 # -------------------------------------------------------------
-lamda_replay = 1 # 5
-lamda_EWC = 1e4 # 500
-batch_size= 36
+lamda_replay = 1  # 5
+lamda_EWC = 1e4  # 500
+batch_size = 36
 N_task = 6
 N_epoch = 2
 N_labels = N_task * 6
-do_method = 'GAN_Memory' #'EWC' #'MeRGAN'   # GAN_Memory   MeRGAN   'Joint'  'Joint1'
-# -------------------------------------------------------------
-# -------------------------------------------------------------
+do_method = 'GAN_Memory'  # 'EWC' #'MeRGAN'   # GAN_Memory   MeRGAN   'Joint'  'Joint1'
 
+
+# -------------------------------------------------------------
+# -------------------------------------------------------------
 
 
 def evalu_my(model, test_loader, test_task=-1):
@@ -175,11 +177,11 @@ def evalu_my(model, test_loader, test_task=-1):
     correct = 0
     for data, target in test_loader:
         data, target = data.to(device), target.to(device)
-        if test_task>=0:
-            target = target+ test_task*6
+        if test_task >= 0:
+            target = target + test_task * 6
         output = model(data)
-        test_loss += ce_loss(output, target).data # sum up batch loss
-        _, pred = output.data.max(1, keepdim=True) # get the index of the max log-probability
+        test_loss += ce_loss(output, target).data  # sum up batch loss
+        _, pred = output.data.max(1, keepdim=True)  # get the index of the max log-probability
         correct += pred.eq(target.data.view_as(pred)).sum()
 
     test_loss /= len(test_loader.dataset)
@@ -193,25 +195,22 @@ def evalu_my(model, test_loader, test_task=-1):
 train_path_all = 'F:/download_data/Image_DATA/ImageNet_GANmemory/'
 model_path_all = 'F:/RUN_CODE_OUT/OWM/'
 
-
 test_path = 'F:/download_data/Image_DATA/ImageNet_GANmemory/Joint/test_joint/'
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 config_path = './configs/ImageNet_classify_53.yaml'
 config = load_config(config_path, 'configs/default.yaml')
 
-
 test_dataset = datasets.ImageFolder(os.path.join(test_path), data_transforms['test'])
 test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size,
-                                           shuffle=True, num_workers=0)
+                                          shuffle=True, num_workers=0)
 class_names = test_dataset.classes
-
 
 classify_my = Net(nlabels=N_labels, device=device).to(device)
 c_optimizer = torch.optim.Adam(classify_my.params, lr=1e-4)
 if do_method == 'MeRGAN':
     config['generator']['name'] = 'resnet4_MR'
     config['discriminator']['name'] = 'resnet4_MR'
-    config['data']['nlabels'] = 6*6 +1
+    config['data']['nlabels'] = 6 * 6 + 1
     generator, _ = build_models(config)
     generator = generator.to(device)
 
@@ -234,19 +233,17 @@ elif do_method == 'GAN_Memory':
         generator = model_equal_part_embed(generator, dict_G)
         generator(task_id=task_id, UPDATE_GLOBAL=True)
 
-
-acc_all_i = [[],[],[],[],[],[]]
+acc_all_i = [[], [], [], [], [], []]
 acc_all = []
 save_path = './classification_result/'
 
 for n, param in classify_my.feat.named_parameters():
     param.requires_grad = True
 
-
-for task_id in range(0,6):
+for task_id in range(0, 6):
     # prepare dataloader
     if do_method == 'Joint':
-        n_c = batch_size*(task_id+1)
+        n_c = batch_size * (task_id + 1)
         train_path = select_task_path_joint(task_id)
         train_dataset = datasets.ImageFolder(os.path.join(train_path), data_transforms['train'])
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=n_c,
@@ -277,7 +274,7 @@ for task_id in range(0,6):
                 if IT % 50 == 0:
                     with torch.no_grad():
                         test_acc_i = 0.0
-                        #for i_t in range(task_id + 1):
+                        # for i_t in range(task_id + 1):
                         for i_t in range(task_id + 1):
                             test_path_i = select_task_path(i_t, is_test=True)
                             test_dataset_i = datasets.ImageFolder(os.path.join(test_path_i), data_transforms['test'])
@@ -298,7 +295,7 @@ for task_id in range(0,6):
         acc_task_i = []
         for epoch in range(N_epoch):
             for (x_cur, y_cur) in train_loader:
-                y_cur = task_id*6 + y_cur
+                y_cur = task_id * 6 + y_cur
                 classify_my.train()
                 c_optimizer.zero_grad()
                 x_cur, y_cur = x_cur.to(device), y_cur.to(device)
@@ -312,11 +309,11 @@ for task_id in range(0,6):
                         for i_t in range(task_id):
                             train_path_0 = select_task_path(i_t)
                             train_dataset_0 = datasets.ImageFolder(os.path.join(train_path_0),
-                                                                 data_transforms['train'])
+                                                                   data_transforms['train'])
                             train_loader_0 = torch.utils.data.DataLoader(train_dataset_0, batch_size=n_c,
-                                                                       shuffle=True, num_workers=0)
+                                                                         shuffle=True, num_workers=0)
                             iter_0 = iter(train_loader_0)
-                            x_replay0,y_replay0 = iter_0.__next__()
+                            x_replay0, y_replay0 = iter_0.__next__()
                             x_replay.append(x_replay0.to(device))
                             y_replay.append(6 * i_t + y_replay0.to(device))
 
@@ -327,11 +324,11 @@ for task_id in range(0,6):
                     loss_replay = ce_loss(logits_replay, y_replay)
                     (lamda_replay * loss_replay).backward()
                 c_optimizer.step()
-                IT +=1
-                if IT%50==0:
+                IT += 1
+                if IT % 50 == 0:
                     with torch.no_grad():
-                        test_acc_i=0.0
-                        for i_t in range(task_id+1):
+                        test_acc_i = 0.0
+                        for i_t in range(task_id + 1):
                             test_path_i = select_task_path(i_t, is_test=True)
                             test_dataset_i = datasets.ImageFolder(os.path.join(test_path_i), data_transforms['test'])
                             test_loader_i = torch.utils.data.DataLoader(test_dataset_i, batch_size=batch_size,
@@ -344,19 +341,19 @@ for task_id in range(0,6):
                         print('\nTest set task {}/ epoch {}: Accuracy: ({:.5f}% / {:.5f}%) LAMBDA: ({:.5f}%)\n'.format(
                             task_id, epoch, test_acc_i, test_acc, lamda_replay))
 
-        if task_id>=1:
+        if task_id >= 1:
             lamda_replay = lamda_replay * 0.9
 
     elif do_method == 'MeRGAN' or do_method == 'GAN_Memory':
         if task_id > 0 and do_method == 'MeRGAN':
-            generator = select_model(do_method, task_id-1, generator, model_path_all)
+            generator = select_model(do_method, task_id - 1, generator, model_path_all)
         classifier_old = copy.deepcopy(classify_my).eval()
         IT = 0
         acc_task = []
         acc_task_i = []
         for epoch in range(N_epoch):
             for (x_cur, y_cur) in train_loader:
-                y_cur = task_id*6 + y_cur
+                y_cur = task_id * 6 + y_cur
                 classify_my.train()
                 x_cur, y_cur = x_cur.to(device), y_cur.to(device)
                 c_optimizer.zero_grad()
@@ -367,7 +364,7 @@ for task_id in range(0,6):
                 y_replay.append(y_cur)
                 if task_id > 0:
                     with torch.no_grad():
-                        if do_method=='MeRGAN':
+                        if do_method == 'MeRGAN':
                             y_sample = get_ydist(6, device=device)
                             z_sample = get_zdist(config['z_dist']['type'], config['z_dist']['dim'],
                                                  device=device)
@@ -384,7 +381,7 @@ for task_id in range(0,6):
                                 x_replay0 = ((x_replay0 + 1.0) / 2.0 - mu_0) / st_0
                                 x_replay.append(x_replay0)
                                 y_replay.append(y_replay0)
-                        elif do_method=='GAN_Memory':
+                        elif do_method == 'GAN_Memory':
                             nlabels = 6
                             y_sample = get_ydist(nlabels, device=device)
                             z_sample = get_zdist(config['z_dist']['type'], config['z_dist']['dim'],
@@ -409,11 +406,11 @@ for task_id in range(0,6):
                 loss_replay = ce_loss(logits_S, y_replay)
                 loss_replay.backward()
                 c_optimizer.step()
-                IT +=1
-                if IT%50==0:
+                IT += 1
+                if IT % 50 == 0:
                     with torch.no_grad():
-                        test_acc_i=0.0
-                        for i_t in range(task_id+1):
+                        test_acc_i = 0.0
+                        for i_t in range(task_id + 1):
                             test_path_i = select_task_path(i_t, is_test=True)
                             test_dataset_i = datasets.ImageFolder(os.path.join(test_path_i), data_transforms['test'])
                             test_loader_i = torch.utils.data.DataLoader(test_dataset_i, batch_size=batch_size,
@@ -432,7 +429,7 @@ for task_id in range(0,6):
         acc_task = []
         acc_task_i = []
         train_loader_fisher = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size,
-                                                   shuffle=True, num_workers=0)
+                                                          shuffle=True, num_workers=0)
         for epoch in range(N_epoch):
             for (x_cur, y_cur) in train_loader:
                 y_cur = task_id * 6 + y_cur
@@ -468,7 +465,6 @@ for task_id in range(0,6):
         classify_my.estimate_fisher(
             train_loader_fisher, fisher_estimation_sample_size, batch_size=batch_size, task_id=task_id)
 
-
 ACC_all_0 = np.stack(acc_all_i[0])
 ACC_all_1 = np.stack(acc_all_i[1])
 ACC_all_2 = np.stack(acc_all_i[2])
@@ -478,18 +474,9 @@ ACC_all_5 = np.stack(acc_all_i[5])
 ACC_all = np.stack(acc_all)
 
 sio.savemat(save_path + do_method + '_insect9_res18_test_acc_layerAll_lambda_OPT_ALL2.mat', {'ACC_all_0': ACC_all_0,
-                                                               'ACC_all_1': ACC_all_1,
-                                                               'ACC_all_2': ACC_all_2,
-                                                               'ACC_all_3': ACC_all_3,
-                                                               'ACC_all_4': ACC_all_4,
-                                                               'ACC_all_5': ACC_all_5,
-                                                               'ACC_all': ACC_all,})
-
-
-
-
-
-
-
-
-
+                                                                                             'ACC_all_1': ACC_all_1,
+                                                                                             'ACC_all_2': ACC_all_2,
+                                                                                             'ACC_all_3': ACC_all_3,
+                                                                                             'ACC_all_4': ACC_all_4,
+                                                                                             'ACC_all_5': ACC_all_5,
+                                                                                             'ACC_all': ACC_all, })

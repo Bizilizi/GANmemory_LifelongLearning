@@ -50,11 +50,11 @@ Num_epoch = 500 * 10000
 DATA = 'fish'
 
 NNN = 7200
-image_path = './data/ImageNet/train/' + DATA + '/' # your image path
+image_path = './data/ImageNet/train/' + DATA + '/'  # your image path
 
 main_path = './code_GAN_Memory/'
 load_dir = './pretrained_model/'
-out_path = main_path+'/results/' + 'ImageNet_' + DATA + '/'
+out_path = main_path + '/results/' + 'ImageNet_' + DATA + '/'
 
 config_path = main_path + '/configs/' + 'classcondition' + '_celeba.yaml'
 config = load_config(config_path, 'configs/default.yaml')
@@ -148,9 +148,6 @@ if 1:
         else:
             param.requires_grad = False
 
-
-
-
     # # # =========================================================================================
     # # # --------------- test, generate samples for each class with label as input ---------------
     # # # =========================================================================================
@@ -159,9 +156,6 @@ if 1:
     # generator = model_equal_all(generator, dict_G)
     # # # =========================================================================================
     # # # =========================================================================================
-
-
-
 
     # Put models on gpu if needed
     generator, discriminator = generator.to(device), discriminator.to(device)
