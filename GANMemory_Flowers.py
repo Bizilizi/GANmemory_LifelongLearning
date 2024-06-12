@@ -54,7 +54,7 @@ image_test = './data/102flowers/' # your image path for calculating FID
 
 main_path = './'
 load_dir = './pretrained_model/'
-out_path = main_path+'/results/'
+out_path = '/scratch/shared/beegfs/dzverev/GANmemory_LifelongLearning/results/'
 
 config_path = main_path+'/configs/' +'Flowers_celeba.yaml'
 config = load_config(config_path, 'configs/default.yaml')
