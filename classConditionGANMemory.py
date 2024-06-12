@@ -52,7 +52,7 @@ DATA = 'fish'
 NNN = 7200
 image_path = './data/ImageNet/train/' + DATA + '/'  # your image path
 
-main_path = './code_GAN_Memory/'
+main_path = '.'
 load_dir = './pretrained_model/'
 out_path = main_path + '/results/' + 'ImageNet_' + DATA + '/'
 
