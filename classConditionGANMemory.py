@@ -248,8 +248,6 @@ for epoch_idx in range(Num_epoch):
 
     for x_real, y in train_loader:
         it += 1
-        g_scheduler.step()
-        d_scheduler.step()
 
         d_lr = d_optimizer.param_groups[0]['lr']
         g_lr = g_optimizer.param_groups[0]['lr']
@@ -267,6 +265,10 @@ for epoch_idx in range(Num_epoch):
 
         # Discriminator updates
         dloss, reg = trainer.discriminator_trainstep(x_real, y, x_fake)
+
+        # step
+        d_scheduler.step()
+        g_scheduler.step()
 
         with torch.no_grad():
 
