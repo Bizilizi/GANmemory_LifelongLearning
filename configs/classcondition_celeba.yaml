@@ -2,7 +2,7 @@ data:
   type: image
   train_dir: './data/102flowers/'
   test_dir: './data/102flowers/'
-  img_size: 256
+  img_size: 64
   nlabels: 6
 generator:
   name: resnet4_AdaFM_bias_classCondition
