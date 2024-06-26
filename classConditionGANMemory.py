@@ -50,7 +50,7 @@ Num_epoch = 500 * 10000
 DATA = 'task1'
 
 NNN = 7200
-image_path = './data/102flowers/train/' + DATA + '/'  # your image path
+image_path = './data/102flowers/' + DATA + '/'  # your image path
 
 main_path = '.'
 load_dir = './pretrained_model/'
