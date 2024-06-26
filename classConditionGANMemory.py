@@ -47,7 +47,7 @@ DATA_FIX = 'CELEBA'
 Num_epoch = 500 * 10000
 
 # select the name of the task from ['fish', 'bird', 'snake', 'dog', 'butterfly', 'insect']
-DATA = 'task1'
+DATA = 'task_1'
 
 NNN = 7200
 image_path = './data/102flowers/' + DATA + '/'  # your image path
