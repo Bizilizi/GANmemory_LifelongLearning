@@ -128,10 +128,10 @@ if 1:
     generator, discriminator = build_models(config)
 
     dict_G = torch.load(load_dir + DATA_FIX + 'Pre_generator')
-    generator = model_equal_part_embed(generator, dict_G)
+    # generator = model_equal_part_embed(generator, dict_G)
     generator = load_model_norm(generator)
     dict_D = torch.load(load_dir + DATA_FIX + 'Pre_discriminator')
-    discriminator = model_equal_part(discriminator, dict_D)
+    # discriminator = model_equal_part(discriminator, dict_D)
     discriminator = load_model_norm(discriminator, is_G=False)
 
     for name, param in generator.named_parameters():
