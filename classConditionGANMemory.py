@@ -8,7 +8,7 @@ import torch
 from torch import nn
 import numpy as np
 import random
-from tqdm.auto import trange
+from tqdm.auto import trange, tqdm
 
 def seed_torch(seed=1029):
     random.seed(seed)
@@ -242,11 +242,11 @@ fid_all = []
 
 tstart = time.time()
 
-for epoch_idx in trange(Num_epoch):
+for epoch_idx in trange(Num_epoch, desc="Epoch: "):
 
     print('Start epoch %d...' % epoch_idx)
 
-    for x_real, y in train_loader:
+    for x_real, y in tqdm(train_loader, leave=False, desc="Batch: "):
         it += 1
 
         d_lr = d_optimizer.param_groups[0]['lr']
