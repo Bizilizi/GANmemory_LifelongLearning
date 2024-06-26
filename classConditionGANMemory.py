@@ -54,7 +54,7 @@ image_path = './data/102flowers/' + DATA + '/'  # your image path
 
 main_path = '.'
 load_dir = './pretrained_model/'
-out_path = main_path + '/results/' + 'Flowers_' + DATA + '/'
+out_path = main_path + '/results/' + 'Flowers_64' + DATA + '/'
 
 config_path = main_path + '/configs/' + 'classcondition' + '_celeba.yaml'
 config = load_config(config_path, 'configs/default.yaml')
