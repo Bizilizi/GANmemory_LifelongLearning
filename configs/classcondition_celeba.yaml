@@ -1,7 +1,7 @@
 data:
   type: image
-  train_dir: './data/ImageNet/'
-  test_dir: './data/ImageNet/'
+  train_dir: './data/102flowers/'
+  test_dir: './data/102flowers/'
   img_size: 256
   nlabels: 6
 generator:

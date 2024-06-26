@@ -47,14 +47,14 @@ DATA_FIX = 'CELEBA'
 Num_epoch = 500 * 10000
 
 # select the name of the task from ['fish', 'bird', 'snake', 'dog', 'butterfly', 'insect']
-DATA = 'fish'
+DATA = 'task1'
 
 NNN = 7200
-image_path = './data/ImageNet/train/' + DATA + '/'  # your image path
+image_path = './data/102flowers/train/' + DATA + '/'  # your image path
 
 main_path = '.'
 load_dir = './pretrained_model/'
-out_path = main_path + '/results/' + 'ImageNet_' + DATA + '/'
+out_path = main_path + '/results/' + 'Flowers_' + DATA + '/'
 
 config_path = main_path + '/configs/' + 'classcondition' + '_celeba.yaml'
 config = load_config(config_path, 'configs/default.yaml')
